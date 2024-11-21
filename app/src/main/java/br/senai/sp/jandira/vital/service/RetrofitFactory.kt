@@ -46,6 +46,9 @@ class RetrofitFactory {
         return retrofitFactory.create(SexoService::class.java)
     }
 
+    fun getAvaliacaoService(): AvaliacaoService {
+        return retrofitFactory.create(AvaliacaoService::class.java)
+    }
 
 
 }

@@ -1,10 +1,11 @@
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -19,13 +20,48 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import br.senai.sp.jandira.vital.model.Consultas
+import br.senai.sp.jandira.vital.model.ResultConsultas
+import br.senai.sp.jandira.vital.service.RetrofitFactory
 import br.senai.sp.jandira.vital.ui.theme.VitalTheme
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
 
+
+class AgendamentoViewModel : ViewModel() {
+    private val _consultas = mutableStateOf<List<Consultas>>(emptyList())
+    val consultas: State<List<Consultas>> = _consultas
+
+    // Função para buscar as consultas do médico
+    fun buscarConsultasMedico(idMedico: String?) {
+        val apiService = RetrofitFactory().getMedicoService()  // Usando o método correto
+        apiService.getConsultasMedico(idMedico).enqueue(object : Callback<ResultConsultas> {
+            override fun onResponse(
+                call: Call<ResultConsultas>,
+                response: Response<ResultConsultas>
+            ) {
+                if (response.isSuccessful) {
+                    _consultas.value = response.body()?.consultas ?: emptyList()
+                }
+            }
+
+            override fun onFailure(call: Call<ResultConsultas>, t: Throwable) {
+                // Tratar erro
+            }
+        })
+    }
+}
+
+
 @Composable
-fun Agendamento(controleDeNavegacao: NavHostController) {
+fun Agendamento(controleDeNavegacao: NavHostController, idMedico: String?) {
+    val viewModel: AgendamentoViewModel = viewModel()
     var indiceMesAtual by remember { mutableStateOf(Calendar.getInstance().get(Calendar.MONTH)) }
     var anoAtual by remember { mutableStateOf(Calendar.getInstance().get(Calendar.YEAR)) }
     var dataSelecionada by remember { mutableStateOf<Pair<String, Int>?>(null) }
@@ -40,6 +76,11 @@ fun Agendamento(controleDeNavegacao: NavHostController) {
         getDiasDoMes(indiceMesAtual, anoAtual)
     }
 
+    // Buscar consultas do médico
+    LaunchedEffect(idMedico) {
+        viewModel.buscarConsultasMedico(idMedico)
+    }
+
     VitalTheme {
         Column(
             modifier = Modifier
@@ -47,7 +88,17 @@ fun Agendamento(controleDeNavegacao: NavHostController) {
                 .background(color = Color(0xffC6E1FF)),
             verticalArrangement = Arrangement.Bottom
         ) {
-            // Cabeçalho do calendário com seleção de mês e ano
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Voltar",
+                tint = Color(0xFF565454),
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 16.dp)
+                    .clickable {
+                        controleDeNavegacao.navigate("infoMedicos")
+                    }
+            )
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -104,28 +155,19 @@ fun Agendamento(controleDeNavegacao: NavHostController) {
                     }
                 }
 
-                // Exibição dos dias do mês em layout rolável
                 Spacer(modifier = Modifier.height(20.dp))
-                Column(
+                LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    diasNoMes.chunked(4).forEach { semana ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            semana.forEach { (diaSemana, dia) ->
-                                DiaCard(
-                                    diaSemana = diaSemana,
-                                    dia = dia.toString(),
-                                    onClick = { dataSelecionada = diaSemana to dia }
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(8.dp))
+                    items(diasNoMes) { (diaSemana, dia) ->
+                        DiaCard(
+                            diaSemana = diaSemana,
+                            dia = dia.toString(),
+                            onClick = { dataSelecionada = diaSemana to dia }
+                        )
                     }
                 }
 
@@ -139,7 +181,11 @@ fun Agendamento(controleDeNavegacao: NavHostController) {
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
 
-                    val horarios = getHorariosDisponiveis(dia)
+                    // Filtra os horários disponíveis para o dia selecionado
+                    val horarios = viewModel.consultas.value.filter {
+                        it.query_days == "2024-${String.format("%02d", indiceMesAtual + 1)}-${String.format("%02d", dia)}"
+                    }.map { it.horas_consulta }
+
                     horarios.chunked(4).forEach { linhaHorarios ->
                         Row(
                             modifier = Modifier
@@ -159,7 +205,6 @@ fun Agendamento(controleDeNavegacao: NavHostController) {
     }
 }
 
-// Função para obter dias e respectivos dias da semana do mês atual em português
 fun getDiasDoMes(mes: Int, ano: Int): List<Pair<String, Int>> {
     val dias = mutableListOf<Pair<String, Int>>()
     val primeiroDiaDoMes = LocalDate.of(ano, mes + 1, 1)
@@ -173,12 +218,6 @@ fun getDiasDoMes(mes: Int, ano: Int): List<Pair<String, Int>> {
     return dias
 }
 
-// Função para simular horários disponíveis para cada dia
-fun getHorariosDisponiveis(dia: Int): List<String> {
-    return listOf("09:00", "10:30", "13:00", "15:30", "17:00")
-}
-
-// Composable para exibir um card com o dia e dia da semana
 @Composable
 fun DiaCard(diaSemana: String, dia: String, onClick: () -> Unit) {
     Column(
@@ -194,7 +233,6 @@ fun DiaCard(diaSemana: String, dia: String, onClick: () -> Unit) {
     }
 }
 
-// Composable para exibir um card com o horário
 @Composable
 fun HorarioCard(horario: String) {
     Box(
@@ -212,6 +250,6 @@ fun HorarioCard(horario: String) {
 @Composable
 fun AgendamentoPreview() {
     VitalTheme {
-        Agendamento(rememberNavController())
+
     }
 }

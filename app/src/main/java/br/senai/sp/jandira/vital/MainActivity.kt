@@ -83,8 +83,14 @@ class MainActivity : ComponentActivity() {
 
 
                     // Agendamento
-                    composable(route = "telaAgendamento") { Agendamento(controleDeNavegacao) }
 
+                    composable(
+                        route = "telaAgendamento/{id}",
+                        arguments = listOf(navArgument("id") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val idMedico = backStackEntry.arguments?.getString("id")
+                        Agendamento(controleDeNavegacao, idMedico)
+                    }
 
 
                     // Medicos

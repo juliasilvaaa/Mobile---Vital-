@@ -193,7 +193,7 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
                         modifier = Modifier
-                            .offset(y = 10.dp)
+                            .offset(y = 20.dp, x = -10.dp)
                         .align(Alignment.End)
                     )
                 }
