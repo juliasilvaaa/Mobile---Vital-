@@ -1,6 +1,6 @@
 package br.senai.sp.jandira.vital.model
 
-data class ResultConsultas(
+data class RespostaConsultas(
     val medico: List<Consultas>,
     val status_code: Int
 )

@@ -15,10 +15,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import br.senai.sp.jandira.vital.screens.InfoMedico
+import br.senai.sp.jandira.vital.screens.MetodosDePagamento
+import br.senai.sp.jandira.vital.screens.ProcessoDoPagamento
 import br.senai.sp.jandira.vital.screens.TelaAdicionarCartao
 import br.senai.sp.jandira.vital.screens.TelaAlterarSenha
 import br.senai.sp.jandira.vital.screens.TelaCadastro
-import br.senai.sp.jandira.vital.screens.TelaHome
 import br.senai.sp.jandira.vital.screens.TelaInicial1
 import br.senai.sp.jandira.vital.screens.TelaInicial2
 import br.senai.sp.jandira.vital.screens.TelaInicial3
@@ -52,6 +53,10 @@ class MainActivity : ComponentActivity() {
                     composable(route = "telaLogin") { TelaLogin(controleDeNavegacao) }
                     composable(route = "telaCadastro") { TelaCadastro(controleDeNavegacao) }
 
+                    composable(route = "telaProcesso") { ProcessoDoPagamento(controleDeNavegacao) }
+
+
+
                     composable(
                         route = "telaPerfil/{idUsuario}",
                         arguments = listOf(navArgument("idUsuario") { type = NavType.IntType })
@@ -60,16 +65,16 @@ class MainActivity : ComponentActivity() {
                         TelaPerfil(controleDeNavegacao, idUsuario)
                     }
 
-
-
-
                     composable(
-                        route = "telaHome/{idUsuario}",
-                        arguments = listOf(navArgument("idUsuario") { type = NavType.IntType })
+                        route = "telaMetodos/{horarioSelecionado}",
+                        arguments = listOf(navArgument("horarioSelecionado") { type = NavType.StringType })
                     ) { backStackEntry ->
-                        val idUsuario = backStackEntry.arguments?.getInt("idUsuario") ?: 0
-                        TelaHome(controleDeNavegacao, idUsuario)
+                        val horarioSelecionado = backStackEntry.arguments?.getString("horarioSelecionado")
+                        MetodosDePagamento(controleDeNavegacao, horarioSelecionado = horarioSelecionado)
                     }
+
+
+
 
                     composable(
                         route = "telaInicio/{idUsuario}",
