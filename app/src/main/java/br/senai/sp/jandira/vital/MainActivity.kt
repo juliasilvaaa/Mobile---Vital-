@@ -14,12 +14,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import br.senai.sp.jandira.vital.screens.HistoricoDeConsultas
 import br.senai.sp.jandira.vital.screens.InfoMedico
 import br.senai.sp.jandira.vital.screens.MetodosDePagamento
 import br.senai.sp.jandira.vital.screens.ProcessoDoPagamento
 import br.senai.sp.jandira.vital.screens.TelaAdicionarCartao
 import br.senai.sp.jandira.vital.screens.TelaAlterarSenha
 import br.senai.sp.jandira.vital.screens.TelaCadastro
+import br.senai.sp.jandira.vital.screens.TelaFavoritos
+import br.senai.sp.jandira.vital.screens.TelaHome
 import br.senai.sp.jandira.vital.screens.TelaInicial1
 import br.senai.sp.jandira.vital.screens.TelaInicial2
 import br.senai.sp.jandira.vital.screens.TelaInicial3
@@ -53,6 +56,8 @@ class MainActivity : ComponentActivity() {
                     composable(route = "telaLogin") { TelaLogin(controleDeNavegacao) }
                     composable(route = "telaCadastro") { TelaCadastro(controleDeNavegacao) }
 
+
+
                     composable(route = "telaProcesso") { ProcessoDoPagamento(controleDeNavegacao) }
 
 
@@ -84,7 +89,24 @@ class MainActivity : ComponentActivity() {
                         TelaInicio(controleDeNavegacao, idUsuario)
                     }
 
+                    // Tela Home
+                    composable(
+                        route = "telaHome/{idUsuario}",
+                        arguments = listOf(navArgument("idUsuario") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val idUsuario = backStackEntry.arguments?.getInt("idUsuario") ?: 0
+                        TelaHome(controleDeNavegacao, idUsuario)
+                    }
 
+                    // Tela Favoritos
+                    composable(route = "telaFavoritos") {
+                        TelaFavoritos() // Implementação da tela de favoritos
+                    }
+
+                    // Tela Notificações
+                    composable(route = "telaNotificacoes") {
+                        TelaAdicionarCartao() // Substitua com a tela correta
+                    }
 
 
                     // Agendamento
@@ -109,22 +131,32 @@ class MainActivity : ComponentActivity() {
 
 
 
-                    composable(route = "telaMedicos") { TelaMedicos(controleDeNavegacao) }
+                    composable(
+                        route = "telaMedicos/{idUsuario}",
+                        arguments = listOf(navArgument("idUsuario") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val idUsuario = backStackEntry.arguments?.getInt("idUsuario") ?: 0
+                        TelaMedicos(controleDeNavegacao, idUsuario)
+                    }
 
-
-                    // Navegacao da Lazy Row - Tela Home
-                    composable(route = "telaTelemedicina") { TelaTelemedicina(controleDeNavegacao) }
-
-
+                    composable(
+                        route = "telaTelemedicina/{idUsuario}",
+                        arguments = listOf(navArgument("idUsuario") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val idUsuario = backStackEntry.arguments?.getInt("idUsuario") ?: 0
+                        TelaTelemedicina(controleDeNavegacao, idUsuario)
+                    }
+                    composable(
+                        route = "telaHistorico/{idUsuario}",
+                        arguments = listOf(navArgument("idUsuario") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val idUsuario = backStackEntry.arguments?.getInt("idUsuario") ?: 0
+                        HistoricoDeConsultas(controleDeNavegacao, idUsuario)
+                    }
 
 
                     composable(route = "telaAlterarSenha") { TelaAlterarSenha(controleDeNavegacao) }
-//                    composable(route = "telaCadastro") { TelaCadastro(controleDeNavegacao) }
                     composable(route = "telaAdicionarCartao") { TelaAdicionarCartao() }
-//                    composable("telaHome/{nome}") { backStackEntry ->
-//                        val nomeUsuario = backStackEntry.arguments?.getString("nome")
-//                        TelaHome()
-
 
                 }
             }
@@ -133,18 +165,18 @@ class MainActivity : ComponentActivity() {
 
 
 }
-    @Composable
-    fun Greeting(name: String, modifier: Modifier = Modifier) {
-        Text(
-            text = "Hello $name!",
-            modifier = modifier
-        )
-    }
+@Composable
+fun Greeting(name: String, modifier: Modifier = Modifier) {
+    Text(
+        text = "Hello $name!",
+        modifier = modifier
+    )
+}
 
-    @Preview(showBackground = true)
-    @Composable
-    fun GreetingPreview() {
-        VitalTheme {
-            Greeting("Android")
-        }
+@Preview(showBackground = true)
+@Composable
+fun GreetingPreview() {
+    VitalTheme {
+        Greeting("Android")
     }
+}

@@ -53,7 +53,7 @@ import retrofit2.Response
 
 
 @Composable
-fun TelaTelemedicina(controleDeNavegacao: NavHostController) {
+fun TelaTelemedicina(controleDeNavegacao: NavHostController, idUsuario : Int) {
     // Lista de especialidades
     val especialidadeList = remember { mutableStateListOf<Especialidade>() }
 
@@ -102,7 +102,7 @@ fun TelaTelemedicina(controleDeNavegacao: NavHostController) {
                     modifier = Modifier
                         .align(Alignment.CenterStart)
                         .padding(start = 16.dp)
-                        .clickable { controleDeNavegacao.navigate("telaHome") }
+                        .clickable { controleDeNavegacao.navigate("telaInicio/$idUsuario") }
                 )
 
                 // Título

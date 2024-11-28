@@ -153,7 +153,7 @@ fun InfoMedico(controleDeNavegacao: NavHostController, idMedico: String?) {
                         modifier = Modifier
                             .align(Alignment.TopStart)
                             .padding(16.dp)
-                            .clickable { controleDeNavegacao.navigate("telaMedicos") }
+                            .clickable { controleDeNavegacao.navigate("telaMedicos/$idMedico") }
                     )
                     Column(
                         modifier = Modifier
@@ -173,6 +173,7 @@ fun InfoMedico(controleDeNavegacao: NavHostController, idMedico: String?) {
                             Text(
                                 text = "Dr. ${it.nome_medico}"
                             )
+
                             Text(
                                 text = it.especialidade
                             )
@@ -202,10 +203,6 @@ fun InfoMedico(controleDeNavegacao: NavHostController, idMedico: String?) {
                                 modifier = Modifier.padding(top = 4.dp, start = 4.dp)
                             )
                         }
-
-
-
-
 
                     }
                 }
@@ -251,7 +248,7 @@ fun InfoMedico(controleDeNavegacao: NavHostController, idMedico: String?) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(10.dp)
-                            .height(300.dp)
+                            .height(350.dp)
                     ) {
                         items(avaliacoes) { avaliacao ->
                             Card(
@@ -295,14 +292,15 @@ fun InfoMedico(controleDeNavegacao: NavHostController, idMedico: String?) {
                     }
                 }
 
-
                 Column(
                     modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
+                        .fillMaxSize()
+                        .padding(36.dp), // Espaçamento interno nas bordas
+                    verticalArrangement = Arrangement.Bottom, // Move o conteúdo para a parte inferior
+                    horizontalAlignment = Alignment.CenterHorizontally // Centraliza horizontalmente
                 ) {
                     Button(
                         onClick = {
-
                             controleDeNavegacao.navigate("telaAgendamento/${medic?.id_medico}")
                         },
                         modifier = Modifier
@@ -327,15 +325,7 @@ fun InfoMedico(controleDeNavegacao: NavHostController, idMedico: String?) {
                     }
                 }
 
-
-
             }
-
-
-
-
-
-
 
         }
     }

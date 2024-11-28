@@ -35,7 +35,7 @@ import retrofit2.Callback
 import retrofit2.Response
 
 @Composable
-fun TelaMedicos(controleDeNavegacao: NavHostController) {
+fun TelaMedicos(controleDeNavegacao: NavHostController, idUsario: Int) {
 
     // Lista de Médicos
     var medicosList by remember {
@@ -92,7 +92,7 @@ fun TelaMedicos(controleDeNavegacao: NavHostController) {
                         .align(Alignment.CenterStart)
                         .padding(start = 16.dp)
                         .clickable {
-                            controleDeNavegacao.navigate("telaInicio")
+                            controleDeNavegacao.navigate("telaInicio/$idUsario")
                         }
                 )
                 Text(
@@ -204,6 +204,6 @@ fun MedicosCard(medicos: Medicos, controleDeNavegacao: NavHostController) {
 @Composable
 fun TelaMedicosPreview() {
     VitalTheme {
-        TelaMedicos(rememberNavController())
+
     }
 }

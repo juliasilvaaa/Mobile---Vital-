@@ -46,25 +46,15 @@ class CategoriaRepository {
         consultas.imagem = painterResource(id = R.drawable.consulta)
 
 
-        // Categoria ChatBot
-        val chatbot = Categoria()
-        chatbot.id = 5
-        chatbot.titulo = "ChatBot"
-        chatbot.selecionado = false
-        chatbot.imagem = painterResource(id = R.drawable.chatbot)
-
-
         // Categoria Suporte
         val suporte = Categoria()
-        suporte.id = 6
+        suporte.id = 5
         suporte.titulo = "Suporte"
         suporte.selecionado = false
         suporte.imagem = painterResource(id = R.drawable.suporte)
 
 
-
-
-        return listOf(telemedicina, medicos, galeria, consultas, chatbot, suporte)
+        return listOf(telemedicina, medicos, galeria, consultas, suporte)
 
     }
 

@@ -4,7 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -166,10 +170,15 @@ fun Agendamento(controleDeNavegacao: NavHostController, idMedico: String?) {
                         )
                         medic?.let {
                             Text(
-                                text = "Dr. ${it.nome_medico}"
+                                text = "Dr. ${it.nome_medico}",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold
                             )
+                            Spacer(modifier = Modifier.height(10.dp))
                             Text(
-                                text = it.especialidade
+                                text = it.especialidade,
+                                color = Color(0xFFA09C9C),
+                                fontSize = 14.sp
                             )
                         }
 
@@ -179,7 +188,6 @@ fun Agendamento(controleDeNavegacao: NavHostController, idMedico: String?) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(600.dp)
                         .background(
                             color = Color.White,
                             shape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)
@@ -188,7 +196,7 @@ fun Agendamento(controleDeNavegacao: NavHostController, idMedico: String?) {
                 ) {
                     Text(
                         "Escolha o dia",
-                        fontSize = 12.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color(0xff565454),
                         modifier = Modifier.padding(start = 25.dp, top = 25.dp, bottom = 3.dp)
@@ -208,14 +216,22 @@ fun Agendamento(controleDeNavegacao: NavHostController, idMedico: String?) {
                                     indiceMesAtual = 11
                                     anoAtual--
                                 }
-                            }
+                            },
+                            modifier = Modifier
+                                .background(Color.Transparent),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
                         ) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Mês Anterior")
+                            Icon(
+                                Icons.Default.ArrowBack,
+                                contentDescription = "Mês Anterior",
+                                tint = Color(0xFF565454)
+                            )
                         }
                         Spacer(modifier = Modifier.width(16.dp))
 
+                        // Mudar de Mes
                         Text(
-                            text = "${nomesDosMeses[indiceMesAtual].uppercase()} $anoAtual",
+                            text = "${nomesDosMeses[indiceMesAtual].capitalize(Locale.getDefault())} - $anoAtual",
                             fontSize = 20.sp
                         )
                         Spacer(modifier = Modifier.width(16.dp))
@@ -227,12 +243,20 @@ fun Agendamento(controleDeNavegacao: NavHostController, idMedico: String?) {
                                 indiceMesAtual = 0
                                 anoAtual++
                             }
-                        }) {
-                            Icon(Icons.Default.ArrowForward, contentDescription = "Próximo Mês")
+                        },
+                            modifier = Modifier
+                                .background(Color.Transparent),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                        ) {
+                            Icon(
+                                Icons.Default.ArrowForward,
+                                contentDescription = "Próximo Mês",
+                                tint = Color(0xFF565454)
+                            )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(10.dp))
                     LazyRow(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -268,22 +292,29 @@ fun Agendamento(controleDeNavegacao: NavHostController, idMedico: String?) {
                             it.data_formatada == dataSelecionadaFormatada
                         }.map { it.hora_formatada }
 
-                        horarios.chunked(4).forEach { linhaHorarios ->
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                linhaHorarios.forEach { horario ->
-                                    HorarioCard(horario, horarioSelecionado){
-                                        horarioClicado ->
-                                        horarioSelecionado = horarioClicado
-                                        isHorarioSelecionado = true
+                    Column (
+                        modifier = Modifier
+                            .height(180.dp)
+                    ){
+                            horarios.chunked(3).forEach { linhaHorarios ->
+                                LazyVerticalGrid(
+                                    columns = GridCells.Fixed(4), // Define 4 itens por linha
+                                    modifier = Modifier
+                                        .padding(14.dp)
+                                        .fillMaxWidth(),
+                                    verticalArrangement = Arrangement.spacedBy(8.dp), // Espaçamento vertical entre as linhas
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp) // Espaçamento horizontal entre as colunas
+                                ) {
+                                    items(horarios) { horario ->
+                                        HorarioCard(horario, horarioSelecionado) { horarioClicado ->
+                                            horarioSelecionado = horarioClicado
+                                            isHorarioSelecionado = true
+                                        }
                                     }
                                 }
+
+
                             }
-                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
 
@@ -292,31 +323,42 @@ fun Agendamento(controleDeNavegacao: NavHostController, idMedico: String?) {
                             modifier = Modifier
                                 .align(Alignment.CenterHorizontally)
                             ){
+
+
+
                         // Botao para direcionar para o pagamento
-                        Button(
-                            onClick = {
-                                // Direcionar para a tela de pagamento após selecionar o dia e a hora
-                                if(isHorarioSelecionado && horarioSelecionado != null){
-                                    controleDeNavegacao.navigate("telaMetodos/$horarioSelecionado")
-                                }
-                            },
+                        Column(
                             modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .height(50.dp)
-                                .width(300.dp)
-                                .background(
-                                    brush = Brush.horizontalGradient(
-                                        colors = listOf(Color(0xFF77B8FF), Color(0xFF0133D6))
-                                    ),
-                                    shape = RoundedCornerShape(30.dp) // Define o formato do botão
-                                ),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Transparent // Para garantir que o gradiente seja visível
-                            ),
-                            contentPadding = PaddingValues()
+                                .fillMaxSize()
+                                .padding(36.dp), // Espaçamento interno nas bordas
+                            verticalArrangement = Arrangement.Bottom, // Move o conteúdo para a parte inferior
+                            horizontalAlignment = Alignment.CenterHorizontally // Centraliza horizontalmente
                         ) {
-                            Text(text = "Ir para Pagamento")
+                            Button(
+                                onClick = {
+                                    // Direcionar para a tela de pagamento após selecionar o dia e a hora
+                                    if (isHorarioSelecionado && horarioSelecionado != null) {
+                                        controleDeNavegacao.navigate("telaMetodos/$horarioSelecionado")
+                                    }
+                                },
+                                modifier = Modifier
+                                    .height(50.dp)
+                                    .width(300.dp)
+                                    .background(
+                                        brush = Brush.horizontalGradient(
+                                            colors = listOf(Color(0xFF77B8FF), Color(0xFF0133D6))
+                                        ),
+                                        shape = RoundedCornerShape(30.dp) // Define o formato do botão
+                                    ),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.Transparent // Para garantir que o gradiente seja visível
+                                ),
+                                contentPadding = PaddingValues()
+                            ) {
+                                Text(text = "Ir para Pagamento")
+                            }
                         }
+
                     }
 
                 }
@@ -340,16 +382,27 @@ fun getDiasDoMes(mes: Int, ano: Int): List<Pair<String, Int>> {
 
 @Composable
 fun DiaCard(diaSemana: String, dia: String, onClick: () -> Unit) {
+
+    var selecionado by remember {
+        mutableStateOf(false)
+    }
     Column(
         modifier = Modifier
             .width(60.dp)
-            .border(1.dp, Color.Gray, RoundedCornerShape(10.dp))
-            .padding(8.dp)
-            .clickable(onClick = onClick),
+            .height(70.dp)
+            .border(1.dp, Color.Transparent, RoundedCornerShape(10.dp))
+            .background(
+                if (selecionado) Color(0xFF0174DE) else Color(0xFFBCBCBC),
+                RoundedCornerShape(10.dp)
+            )
+            .clickable {
+                selecionado = !selecionado
+                onClick()
+            },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = diaSemana, fontSize = 12.sp, color = Color.Gray)
-        Text(text = dia, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        Text(text = diaSemana, fontSize = 12.sp, color = Color.White)
+        Text(text = dia, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White)
     }
 }
 
@@ -358,7 +411,10 @@ fun HorarioCard(horario: String, horarioSelecionado: String?, onHorarioClick: (S
     Box(
         modifier = Modifier
             .width(80.dp)
-            .background(color = if (horarioSelecionado == horario) Color(0xFF0174DE) else Color.Transparent)
+            .background(
+                color = if (horarioSelecionado == horario) Color(0xFF0174DE) else Color.Transparent,
+                RoundedCornerShape(10.dp)
+            )
             .border(width = 2.dp, color = Color(0xFFBCBCBC), shape = RoundedCornerShape(10.dp))
             .padding(vertical = 8.dp)
             .clickable {

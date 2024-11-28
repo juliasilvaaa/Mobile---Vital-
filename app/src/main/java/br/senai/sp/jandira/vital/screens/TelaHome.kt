@@ -230,8 +230,9 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
                         .clickable {
                             // Navegacao entre as categorias
                             when (item.titulo) {
-                                "Telemedicina" -> controleDeNavegacao.navigate("telaTelemedicina")
-                                "Médicos" -> controleDeNavegacao.navigate("telaMedicos")
+                                "Telemedicina" -> controleDeNavegacao.navigate("telaTelemedicina/$idUsuario")
+                                "Médicos" -> controleDeNavegacao.navigate("telaMedicos/$idUsuario")
+                                "Consultas" -> controleDeNavegacao.navigate("telaHistorico/$idUsuario")
                             }
                         },
                     // Se o card estiver selecionado (true a cor dele vai ser mais escura)
