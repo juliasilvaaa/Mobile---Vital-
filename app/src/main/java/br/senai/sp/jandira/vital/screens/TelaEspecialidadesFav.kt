@@ -14,11 +14,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import br.senai.sp.jandira.vital.model.Especialidade
 import br.senai.sp.jandira.vital.ui.theme.VitalTheme
 
 @Composable
-fun TelaEspecialidadesFav(favoritos: List<Especialidade>) {
+fun TelaEspecialidadesFav(
+    favoritos: List<Especialidade> = emptyList(),
+    controleDeNavegacao: NavHostController? = null
+) {
     VitalTheme {
         Column(
             modifier = Modifier
@@ -38,12 +42,15 @@ fun TelaEspecialidadesFav(favoritos: List<Especialidade>) {
             ) {
                 items(favoritos) { especialidade ->
                     EspecialidadeCard(
+                        controleDeNavegacao = controleDeNavegacao,
                         especialidade = especialidade,
                         isFavorito = true, // Sempre favorito aqui
                         onFavoritoClick = {} // Não há remoção de favoritos nesta tela
                     )
                 }
+
             }
         }
     }
 }
+

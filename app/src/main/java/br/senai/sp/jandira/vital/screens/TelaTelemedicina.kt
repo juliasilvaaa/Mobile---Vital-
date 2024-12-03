@@ -38,7 +38,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -54,6 +53,7 @@ import retrofit2.Response
 
 @Composable
 fun TelaTelemedicina(controleDeNavegacao: NavHostController, idUsuario : Int) {
+
     // Lista de especialidades
     val especialidadeList = remember { mutableStateListOf<Especialidade>() }
 
@@ -162,6 +162,7 @@ fun TelaTelemedicina(controleDeNavegacao: NavHostController, idUsuario : Int) {
                         val isFavorito = remember { mutableStateOf(false) }
 
                         EspecialidadeCard(
+                            controleDeNavegacao = controleDeNavegacao, // Passar o parâmetro necessário
                             especialidade = especialidade,
                             isFavorito = isFavorito.value,
                             onFavoritoClick = { isFavorito.value = !isFavorito.value }
@@ -175,6 +176,7 @@ fun TelaTelemedicina(controleDeNavegacao: NavHostController, idUsuario : Int) {
 
 @Composable
 fun EspecialidadeCard(
+    controleDeNavegacao: NavHostController?,
     especialidade: Especialidade,
     isFavorito: Boolean,
     onFavoritoClick: () -> Unit
@@ -184,9 +186,12 @@ fun EspecialidadeCard(
             .padding(10.dp)
             .width(150.dp)
             .height(150.dp)
+            .clickable {
+                controleDeNavegacao?.navigate("infoEspecialidade/${especialidade.id_especialidade}")
+            }
     ) {
         Box {
-            // Imagem
+            // Imagem da especialidade
             AsyncImage(
                 model = especialidade.imagem_url,
                 contentDescription = "Imagem da especialidade",
@@ -219,9 +224,10 @@ fun EspecialidadeCard(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
                     .padding(8.dp)
-                    .clickable { onFavoritoClick() }
+                    .clickable {
+                        onFavoritoClick()
+                    }
             )
         }
     }
 }
-

@@ -53,8 +53,8 @@ fun HistoricoDeConsultas(controleDeNavegacao: NavHostController, idUsuario: Int)
                         shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
                     )
                     .fillMaxWidth()
-                    .height(200.dp)
-                    .padding(top = 50.dp)
+                    .height(180.dp)
+                    .padding(top = 20.dp)
             ) {
                 // Icon clicável para voltar
                 Icon(
@@ -207,8 +207,20 @@ fun HistoricoDeConsultas(controleDeNavegacao: NavHostController, idUsuario: Int)
                                 color = Color.Gray
                             )
                             Spacer(modifier = Modifier.height(16.dp))
-                            Button(onClick = { isCardVisible.value = false }) {
-                                Text("Fechar")
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Button(onClick = { isCardVisible.value = false }) {
+                                    Text("Fechar")
+                                }
+                                Button(onClick = {
+                                    controleDeNavegacao.navigate("telaChamada")
+                                }) {
+                                    Text("Iniciar")
+                                }
                             }
                         }
                     }

@@ -1,6 +1,7 @@
 package br.senai.sp.jandira.vital
 
 import Agendamento
+import GaleriaDeVideo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,13 +15,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import br.senai.sp.jandira.vital.screens.GaleriaDeVideos
 import br.senai.sp.jandira.vital.screens.HistoricoDeConsultas
+import br.senai.sp.jandira.vital.screens.InfoEspecialidade
 import br.senai.sp.jandira.vital.screens.InfoMedico
 import br.senai.sp.jandira.vital.screens.MetodosDePagamento
 import br.senai.sp.jandira.vital.screens.ProcessoDoPagamento
 import br.senai.sp.jandira.vital.screens.TelaAdicionarCartao
 import br.senai.sp.jandira.vital.screens.TelaAlterarSenha
 import br.senai.sp.jandira.vital.screens.TelaCadastro
+import br.senai.sp.jandira.vital.screens.TelaChamada
+import br.senai.sp.jandira.vital.screens.TelaEspecialidadesFav
 import br.senai.sp.jandira.vital.screens.TelaFavoritos
 import br.senai.sp.jandira.vital.screens.TelaHome
 import br.senai.sp.jandira.vital.screens.TelaInicial1
@@ -98,15 +103,26 @@ class MainActivity : ComponentActivity() {
                         TelaHome(controleDeNavegacao, idUsuario)
                     }
 
+
+
                     // Tela Favoritos
-                    composable(route = "telaFavoritos") {
-                        TelaFavoritos() // Implementação da tela de favoritos
+                     composable(
+                        route = "telaFavoritos/{idUsuario}",
+                        arguments = listOf(navArgument("idUsuario") { type = NavType.IntType })
+                    ) { backStackEntry ->
+                        val idUsuario = backStackEntry.arguments?.getInt("idUsuario") ?: 0
+                        TelaFavoritos(controleDeNavegacao, idUsuario)
                     }
+
+                    composable(route = "telaEspecialidadeFav") { TelaEspecialidadesFav() }
+
 
                     // Tela Notificações
                     composable(route = "telaNotificacoes") {
                         TelaAdicionarCartao() // Substitua com a tela correta
                     }
+
+
 
 
                     // Agendamento
@@ -127,6 +143,14 @@ class MainActivity : ComponentActivity() {
                     ) { backStackEntry ->
                         val idMedico = backStackEntry.arguments?.getString("id")
                         InfoMedico(controleDeNavegacao, idMedico)
+                    }
+
+                    composable(
+                        route = "infoEspecialidade/{id}",
+                        arguments = listOf(navArgument("id") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val idEspecialidade = backStackEntry.arguments?.getString("id")
+                        InfoEspecialidade(controleDeNavegacao, idEspecialidade )
                     }
 
 
@@ -156,7 +180,11 @@ class MainActivity : ComponentActivity() {
 
 
                     composable(route = "telaAlterarSenha") { TelaAlterarSenha(controleDeNavegacao) }
+
+                    composable(route = "telaChamada") { TelaChamada(controleDeNavegacao) }
                     composable(route = "telaAdicionarCartao") { TelaAdicionarCartao() }
+
+
 
                 }
             }

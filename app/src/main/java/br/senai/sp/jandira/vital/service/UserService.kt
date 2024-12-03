@@ -2,6 +2,7 @@ package br.senai.sp.jandira.vital.service
 
 
 import br.senai.sp.jandira.vital.model.Login
+import br.senai.sp.jandira.vital.model.MeetingResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 import br.senai.sp.jandira.vital.model.Usuario
@@ -19,6 +20,9 @@ interface UserService {
     @Headers("Content-Type: application/json")
     @POST("usuario")
     fun salvarUsuario(@Body usuario: Usuario): Call<Usuario>
+
+    @GET("generate-meeting")
+    suspend fun generateMeeting(): MeetingResponse
 
     @Headers("Content-Type: application/json")
     @POST("loginUsuario")

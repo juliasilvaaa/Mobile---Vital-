@@ -64,8 +64,9 @@ fun TelaInicio(controleDeNavegacao: NavHostController, idUsuario: Int) {
                 val usuarioId = backStackEntry.arguments?.getString("idUsuario")?.toInt() ?: idUsuario
                 TelaHome(controleDeNavegacao, usuarioId)
             }
-            composable("telaFavoritos") {
-                TelaFavoritos()
+            composable("telaFavoritos/{idUsuario}") { backStackEntry ->
+                val usuarioId = backStackEntry.arguments?.getString("idUsuario")?.toInt() ?: idUsuario
+                TelaFavoritos(controleDeNavegacao, usuarioId)
             }
             composable("telaNotificacoes") {
                 TelaAdicionarCartao()  // Substitua com a tela correta

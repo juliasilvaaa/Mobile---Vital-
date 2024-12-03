@@ -74,12 +74,16 @@ dependencies {
     // COIL -Pegar imagem que esta em outro lugar
     implementation("io.coil-kt:coil-compose:2.7.0")
 
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.0")
 
+
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
     // Fonte
     implementation ("androidx.compose.ui:ui:1.4.0")
     implementation ("androidx.compose.material:material:1.4.0")
     implementation ("androidx.compose.ui:ui-tooling-preview:1.4.0")
     implementation ("androidx.navigation:navigation-compose:2.5.0")
+    implementation("androidx.compose.runtime:runtime:1.5.1")
 
     //
     implementation("androidx.core:core-ktx:1.9.0")
