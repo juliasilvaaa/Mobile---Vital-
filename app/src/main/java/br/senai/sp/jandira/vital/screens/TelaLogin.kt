@@ -33,11 +33,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.vital.R
 import br.senai.sp.jandira.vital.model.Login
@@ -71,6 +73,7 @@ fun TelaLogin(controleDeNavegacao: NavHostController) {
     }
 
     var isLoading = remember { mutableStateOf(false) }
+
 
 
     VitalTheme {
@@ -193,7 +196,7 @@ fun TelaLogin(controleDeNavegacao: NavHostController) {
                                             Log.d("NAVEGACAO", "Nome do usuário: ${usuario.nome}")
                                             // Navega para a TelaHome, passando o id do usuário ou token se necessário
                                             val idUsuario = usuario.id_usuario ?: 0
-                                            controleDeNavegacao.navigate("telaInicio/$idUsuario")
+                                            controleDeNavegacao.navigate("telaHome/$idUsuario")
                                         } else {
                                             erroLoginState.value = true
                                             mensagemErroState.value = "Erro: credenciais inválidas."

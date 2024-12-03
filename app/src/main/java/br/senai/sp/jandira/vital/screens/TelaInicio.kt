@@ -2,7 +2,6 @@ package br.senai.sp.jandira.vital.screens
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
@@ -11,6 +10,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -19,6 +19,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import br.senai.sp.jandira.vital.model.NavItem
+
 
 @Composable
 fun TelaInicio(controleDeNavegacao: NavHostController, idUsuario: Int) {
@@ -41,9 +42,10 @@ fun TelaInicio(controleDeNavegacao: NavHostController, idUsuario: Int) {
                         selected = selectedIndex == index,
                         onClick = {
                             selectedIndex = index
+                            // Alterar aqui para não limpar a pilha de navegação
                             controleDeNavegacao.navigate(navItem.route) {
-                                popUpTo(controleDeNavegacao.graph.startDestinationId) { inclusive = true }
                                 launchSingleTop = true
+                                restoreState = true  // Certifique-se de que o estado não seja perdido
                             }
                         },
                         icon = { Icon(imageVector = navItem.icon, contentDescription = navItem.label) },
@@ -55,7 +57,7 @@ fun TelaInicio(controleDeNavegacao: NavHostController, idUsuario: Int) {
     ) { innerPadding ->
         NavHost(
             navController = controleDeNavegacao,
-            startDestination = "telaHome/$idUsuario",
+            startDestination = "telaHome/$idUsuario",  // Garante que comece com a tela Home
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("telaHome/{idUsuario}") { backStackEntry ->
@@ -66,9 +68,9 @@ fun TelaInicio(controleDeNavegacao: NavHostController, idUsuario: Int) {
                 TelaFavoritos()
             }
             composable("telaNotificacoes") {
-                TelaAdicionarCartao() // Substitua com a tela correta
+                TelaAdicionarCartao()  // Substitua com a tela correta
             }
         }
     }
-}
 
+}

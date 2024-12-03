@@ -43,11 +43,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.navigation.NavHostController
 import br.senai.sp.jandira.vital.R
 import br.senai.sp.jandira.vital.model.Especialidade
@@ -62,12 +64,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
 @Composable
 fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
 
-    // Criando variaves de estado
-
+    // Criando variáveis de estado
     var id by remember {
         mutableStateOf("")
     }
@@ -80,7 +80,7 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
 
     var especialidadeList = remember { mutableStateListOf<Especialidade>() }
 
-    // Efetuar a requisicao para a API
+    // Efetuar a requisição para a API das especialidades
     LaunchedEffect(key1 = Unit) {
         val callEspecialidadeList = RetrofitFactory()
             .getEspecialidadeService()
@@ -88,7 +88,6 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
 
         callEspecialidadeList.enqueue(object : Callback<ResultEspecialidade> {
             override fun onResponse(
-
                 call: Call<ResultEspecialidade>,
                 response: Response<ResultEspecialidade>
             ) {
@@ -99,16 +98,18 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
                     especialidades?.let {
                         especialidadeList.addAll(it)
                     }
-                } else{
+                } else {
                     Log.d("API_ERROR", "Response not successful: ${response.code()}")
                 }
             }
+
             override fun onFailure(call: Call<ResultEspecialidade>, t: Throwable) {
-                // Lidar com a falha da requisicao
+                // Lidar com a falha da requisição
             }
         })
     }
 
+    // Efetuar a requisição para a API do usuário
     LaunchedEffect(key1 = idUsuario) {
         val callUsuario = RetrofitFactory()
             .getUsuarioService()
@@ -133,23 +134,18 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
                 }
             }
 
-
             override fun onFailure(call: Call<UsuarioResponse>, t: Throwable) {
                 Log.e("USUARIO_ERROR", "Falha ao buscar usuário: ${t.message}")
             }
         })
-
     }
 
-
-
-    var especialidadeState= remember {
+    var especialidadeState = remember {
         mutableStateOf("")
     }
 
     Column {
-
-        Surface (
+        Surface(
             modifier = Modifier
                 .height(260.dp)
         ) {
@@ -160,15 +156,14 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxSize()
-                // Colocar borda arredondada
-
             )
+
             Column {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .statusBarsPadding()  // Adiciona padding para evitar a sobreposição com a barra de status
-                        .padding(16.dp)  // Padding interno opcional
+                        .statusBarsPadding()
+                        .padding(16.dp)
                 ) {
                     AsyncImage(
                         model = user?.foto,
@@ -176,17 +171,17 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
                         modifier = Modifier
                             .width(80.dp)
                             .height(80.dp)
-                            .clip(RoundedCornerShape(40.dp)) // Aplica bordas arredondadas
-                            .align(Alignment.TopEnd) // Posiciona no canto superior direito
+                            .clip(RoundedCornerShape(40.dp))
+                            .align(Alignment.TopEnd)
                             .clickable {
-                                controleDeNavegacao.navigate("telaPerfil/$idUsuario") // Substitua pelo nome da rota
+                                controleDeNavegacao.navigate("telaPerfil/$idUsuario")
                             },
                         contentScale = ContentScale.Crop
                     )
                 }
 
-                // Puxar o nome do usuario
-                if (user!= null){
+                // Puxar o nome do usuário
+                if (user != null) {
                     Text(
                         text = "Olá, ${user!!.nome}",
                         fontSize = 24.sp,
@@ -194,17 +189,15 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
                         color = Color.White,
                         modifier = Modifier
                             .offset(y = 20.dp, x = -10.dp)
-                        .align(Alignment.End)
+                            .align(Alignment.End)
                     )
                 }
-
-
             }
-
         }
+
         Spacer(modifier = Modifier.height(14.dp))
 
-// Categorias
+        // Categorias
         Column {
             Text(
                 text = "Categorias",
@@ -214,13 +207,12 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
                 modifier = Modifier
                     .offset(x = 10.dp)
             )
-
         }
         Spacer(modifier = Modifier.height(10.dp))
 
         LazyRow {
-            items(categoria){ item ->
-                Card (
+            items(categoria) { item ->
+                Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(90.dp)
@@ -228,28 +220,24 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
                         .offset(x = 10.dp)
                         .padding(horizontal = 6.dp)
                         .clickable {
-                            // Navegacao entre as categorias
                             when (item.titulo) {
                                 "Telemedicina" -> controleDeNavegacao.navigate("telaTelemedicina/$idUsuario")
                                 "Médicos" -> controleDeNavegacao.navigate("telaMedicos/$idUsuario")
                                 "Consultas" -> controleDeNavegacao.navigate("telaHistorico/$idUsuario")
                             }
                         },
-                    // Se o card estiver selecionado (true a cor dele vai ser mais escura)
-                    colors = if (item.selecionado==true) CardDefaults.cardColors(containerColor = Color(0xFF2954C7))
-                    // Se nao estiver selecionado a opacidade será menor
+                    colors = if (item.selecionado == true) CardDefaults.cardColors(containerColor = Color(0xFF2954C7))
                     else CardDefaults.cardColors(containerColor = Color(0x802954C7))
-                ){
-                    Column (
+                ) {
+                    Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center,
                         modifier = Modifier
                             .padding(8.dp)
                             .fillMaxSize()
                     ) {
-                        // Imagem de cada categoria
                         Image(
-                            painter = if (item.imagem==null)
+                            painter = if (item.imagem == null)
                                 painterResource(id = R.drawable.notimage) else item.imagem!!,
                             contentDescription = "",
                             contentScale = ContentScale.Fit,
@@ -262,17 +250,15 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
                             color = Color.White,
                             fontSize = 14.sp
                         )
-
                     }
-
-
                 }
-
             }
         }
+
         Spacer(modifier = Modifier.height(10.dp))
 
-        Card (
+        // Campo de Pesquisa por especialidade
+        Card(
             elevation = CardDefaults.cardElevation(7.dp),
             shape = RoundedCornerShape(23.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -280,16 +266,13 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
                 .fillMaxWidth()
                 .padding(20.dp)
                 .height(48.dp)
-        ){
-            // Campo de Pesquisa por especialidade
+        ) {
             OutlinedTextField(
                 value = especialidadeState.value,
                 onValueChange = {
                     especialidadeState.value = it
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .offset(y = 0.dp),
+                modifier = Modifier.fillMaxWidth(),
                 placeholder = {
                     Text(
                         text = "Pesquise por especialidade",
@@ -299,19 +282,22 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
                 trailingIcon = {
                     IconButton(onClick = { }) {
                         Icon(
-                            imageVector = Icons.Default.Search ,
+                            imageVector = Icons.Default.Search,
                             contentDescription = "",
                             tint = Color(0xFFA09C9C)
                         )
-                        
                     }
                 },
-                colors = OutlinedTextFieldDefaults.colors(unfocusedBorderColor = Color.Transparent, focusedBorderColor = Color.Transparent)
+                colors = OutlinedTextFieldDefaults.colors(
+                    unfocusedBorderColor = Color.Transparent,
+                    focusedBorderColor = Color.Transparent
+                )
             )
         }
+
         Spacer(modifier = Modifier.height(4.dp))
 
-
+        // Lista de especialidades
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             contentPadding = PaddingValues(16.dp),
@@ -320,31 +306,18 @@ fun TelaHome(controleDeNavegacao: NavHostController, idUsuario: Int) {
                 .padding(top = 20.dp),
             horizontalArrangement = Arrangement.Center,
             verticalArrangement = Arrangement.Top
-        ){
+        ) {
             items(especialidadeList) {
                 EspecialidadeCard(it, true) {}
             }
-
         }
-
-
-
     }
-
-
 }
-
-
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun TelaHomePreview () {
-
-
-    // Pre-visualizacao
+fun TelaHomePreview() {
     VitalTheme {
+        // Pre-visualizacao
     }
-
-
-
 }
